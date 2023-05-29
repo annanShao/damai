@@ -170,10 +170,7 @@ class Concert(object):
             try:
                 session = WebDriverWait(self.driver, 2, 0.1).until(
                     EC.presence_of_element_located((By.CLASS_NAME, 'sku-times-card')))    # 日期、场次和票档进行定位
-                price = WebDriverWait(self.driver, 2, 0.1).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'sku-tickets-card')))  # 日期、场次和票档进行定位
-                date = None                                      # 暂不支持日期
-
+                date = None       
                 toBeClicks = []
 
                 if date is not None:
@@ -188,7 +185,7 @@ class Concert(object):
                 # 选定场次('select_right_list_item')#选定场次
                 session_list = session.find_elements(
                     by=By.CLASS_NAME, value='bui-dm-sku-card-item')
-                # print('可选场次数量为：{}'.format(len(session_list)))
+                print('可选场次数量为：{}'.format(len(session_list)))
                 for i in self.session:  # 根据优先级选择一个可行场次
                     j: WebElement = session_list[i-1]
                     # TODO 不确定已满的场次带的是什么Tag
@@ -206,6 +203,14 @@ class Concert(object):
                         toBeClicks.append(j)
                         break
 
+                for i in toBeClicks:
+                    i.click()
+                    sleep(0.05)
+                toBeClicks = []
+
+                price = WebDriverWait(self.driver, 2, 0.1).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'sku-tickets-card')))  # 日期、场次和票档进行定位
+                print(price)
                 price_list = price.find_elements(
                     by=By.CLASS_NAME, value='bui-dm-sku-card-item')  # 选定票档
                 # print('可选票档数量为：{}'.format(len(price_list)))
