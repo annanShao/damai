@@ -259,13 +259,15 @@ class Concert(object):
 
     def check_order(self):
         if self.status in [3, 4, 5]:
-            WebDriverWait(self.driver, 2, 0.1)\
-                .until(EC.presence_of_element_located((By.CLASS_NAME, 'icondanxuan-weixuan_')))\
-                .click()
+            elements = WebDriverWait(self.driver, 2, 0.1)\
+                .until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'icondanxuan-weixuan_')))\
+            
+            for item in elements:
+                item.click()
 
             comfirmBtn = self.driver.find_element(
                 By.XPATH, '//*[@id="dmOrderSubmitBlock_DmOrderSubmitBlock"]/div[2]/div/div[2]/div[3]/div[2]')
-            comfirmBtn.click()
+            comfirmBtn.click() # 这里如果不改 chromedriver.exe 的内容的话，会导致无法下单，具体见 readme
             # 判断title是不是支付宝
             print(u"###等待跳转到--付款界面--，可自行刷新，若长期不跳转可选择-- CRTL+C --重新抢票###")
             try:
@@ -296,7 +298,7 @@ if __name__ == '__main__':
             con.choose_ticket()
             con.check_order()
         except Exception as e:
-            con.driver.get(con.target_url)
+            # con.driver.get(con.target_url)
             print(e)
             continue
 
