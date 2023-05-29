@@ -166,29 +166,13 @@ class Concert(object):
             buybutton.click()
             box = WebDriverWait(self.driver, 2, 0.1).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.sku-pop-wrapper')))
-
             try:
                 session = WebDriverWait(self.driver, 2, 0.1).until(
                     EC.presence_of_element_located((By.CLASS_NAME, 'sku-times-card')))    # 日期、场次和票档进行定位
-                price = WebDriverWait(self.driver, 2, 0.1).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'sku-tickets-card')))  # 日期、场次和票档进行定位
-                date = None                                      # 暂不支持日期
-
-                toBeClicks = []
-
-                if date is not None:
-                    date_list = date.find_element(
-                        by=By.XPATH, value="//div[@class='wh_content_item']//div[starts-with(@class,'wh_item_date')]")  # 选定日期
-                    # print('可选日期数量为：{}'.format(len(date_list)))
-                    for i in self.date:
-                        j: WebElement = date_list[i-1]
-                        toBeClicks.append(j)
-                        break
-
-                # 选定场次('select_right_list_item')#选定场次
+                print("session", session)
+                
                 session_list = session.find_elements(
                     by=By.CLASS_NAME, value='bui-dm-sku-card-item')
-                # print('可选场次数量为：{}'.format(len(session_list)))
                 for i in self.session:  # 根据优先级选择一个可行场次
                     j: WebElement = session_list[i-1]
                     # TODO 不确定已满的场次带的是什么Tag
@@ -197,14 +181,58 @@ class Concert(object):
                         if k.text == '无票':
                             continue
                         elif k.text == '预售':
-                            toBeClicks.append(j)
+                            # toBeClicks.append(j)
+                            j.click()
                             break
                         elif k.text == '惠':
-                            toBeClicks.append(j)
+                            # toBeClicks.append(j)
+                            j.click()
                             break
                     else:
-                        toBeClicks.append(j)
+                        # toBeClicks.append(j)
+                        j.click()
                         break
+                
+                price = WebDriverWait(self.driver, 2, 0.1).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'sku-tickets-card')))  # 日期、场次和票档进行定位
+                print("price", price)
+                date = None                                      # 暂不支持日期
+                # date = WebDriverWait(self.driver, 2, 0.1).until(
+                #     EC.presence_of_element_located((By.CLASS_NAME, 'sku-tickets-card')))  # 日期、场次和票档进行定位
+                
+                toBeClicks = []
+
+                # if date is not None:
+                #     date_list = date.find_element(
+                #         by=By.XPATH, value="//div[@class='wh_content_item']//div[starts-with(@class,'wh_item_date')]")  # 选定日期
+                #     # print('可选日期数量为：{}'.format(len(date_list)))
+                #     for i in self.date:
+                #         j: WebElement = date_list[i-1]
+                #         toBeClicks.append(j)
+                #         break
+                # 选定场次('select_right_list_item')#选定场次
+                # session_list = session.find_elements(
+                #     by=By.CLASS_NAME, value='bui-dm-sku-card-item')
+                # print(session_list)
+                # exit()
+                # print('可选场次数量为：{}'.format(len(session_list)))
+                
+                # for i in self.session:  # 根据优先级选择一个可行场次
+                #     j: WebElement = session_list[i-1]
+                #     # TODO 不确定已满的场次带的是什么Tag
+                #     k = self.isClassPresent(j, 'item-text-tag', True)
+                #     if k:  # 如果找到了带presell的类
+                #         if k.text == '无票':
+                #             continue
+                #         elif k.text == '预售':
+                #             toBeClicks.append(j)
+                #             break
+                #         elif k.text == '惠':
+                #             toBeClicks.append(j)
+                #             break
+                #     else:
+                #         toBeClicks.append(j)
+                #         break
 
                 price_list = price.find_elements(
                     by=By.CLASS_NAME, value='bui-dm-sku-card-item')  # 选定票档
@@ -260,7 +288,7 @@ class Concert(object):
     def check_order(self):
         if self.status in [3, 4, 5]:
             elements = WebDriverWait(self.driver, 2, 0.1)\
-                .until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'icondanxuan-weixuan_')))\
+                .until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'icondanxuan-weixuan_')))
             
             for item in elements:
                 item.click()
