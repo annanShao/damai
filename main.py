@@ -153,7 +153,8 @@ class Concert(object):
                 buybutton = box.find_element(by=By.CLASS_NAME, value='buy')
                 buybutton_text: str = buybutton.text
             except Exception as e:
-                raise Exception(f"***Error: buybutton 位置找不到***: {e}")
+                # raise Exception(f"***Error: buybutton 位置找不到***: {e}")
+                print('no btn')
 
             if "即将开抢" in buybutton_text:
                 self.status = 2
@@ -290,6 +291,7 @@ class Concert(object):
             elements = WebDriverWait(self.driver, 2, 0.1)\
                 .until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'icondanxuan-weixuan_')))
             
+            sleep(0.1)
             for item in elements:
                 item.click()
 
@@ -297,9 +299,14 @@ class Concert(object):
                 By.XPATH, '//*[@id="dmOrderSubmitBlock_DmOrderSubmitBlock"]/div[2]/div/div[2]/div[3]/div[2]')
             comfirmBtn.click() # 这里如果不改 chromedriver.exe 的内容的话，会导致无法下单，具体见 readme
             # 判断title是不是支付宝
+            
+            while not EC.title_contains('支付宝')(self.driver):
+                sleep(0.1)
+                comfirmBtn.click()
+            
             print(u"###等待跳转到--付款界面--，可自行刷新，若长期不跳转可选择-- CRTL+C --重新抢票###")
             try:
-                WebDriverWait(self.driver, 3600, 0.1).until(
+                WebDriverWait(self.driver, 10, 0.1).until(
                     EC.title_contains('支付宝'))
             except:
                 raise Exception(u'***Error: 长期跳转不到付款界面***')
@@ -320,13 +327,16 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         exit(1)
-
+    index = 0
     while True:
         try:
             con.choose_ticket()
             con.check_order()
         except Exception as e:
-            # con.driver.get(con.target_url)
+            con.driver.get(con.target_url)
+            if (index == 0):
+                sleep(3)
+            index = 1
             print(e)
             continue
 
